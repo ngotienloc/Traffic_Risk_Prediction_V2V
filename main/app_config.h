@@ -5,8 +5,9 @@
  * 1. CẤU HÌNH CHÂN PHẦN CỨNG (HARDWARE PINS)
  * ========================================== */
 // Cảm biến MPU6050 (Giao tiếp I2C)
-#define I2C_MASTER_SCL_IO           22      // Chân SCL của ESP32
-#define I2C_MASTER_SDA_IO           21      // Chân SDA của ESP32
+// Lưu ý: Với ESP32-S3, hãy kiểm tra kỹ sơ đồ chân trên board mạch thực tế.
+#define I2C_MASTER_SCL_IO           22      // Chân SCL (Có thể map sang chân khác nếu board S3 dùng chân khác)
+#define I2C_MASTER_SDA_IO           21      // Chân SDA (Có thể map sang chân khác nếu board S3 dùng chân khác)
 #define I2C_MASTER_NUM              0       // Dùng cổng I2C số 0
 #define I2C_MASTER_FREQ_HZ          400000  // Tần số I2C (400kHz - Tốc độ cao)
 
@@ -14,7 +15,8 @@
 #define GPS_UART_NUM                1       // Dùng cổng UART số 1
 #define GPS_TX_PIN                  17      // Chân TX của ESP nối với RX của GPS
 #define GPS_RX_PIN                  16      // Chân RX của ESP nối với TX của GPS
-#define GPS_BAUD_RATE               9600    // Tốc độ Baudrate mặc định của NEO-6M
+#define GPS_BAUD_RATE               9600    // Baudrate mặc định (Nên nâng lên 38400/115200 để chạy 10Hz)
+#define GPS_UPDATE_RATE_HZ          5       // Tần số cập nhật vị trí mong muốn (Hz)
 
 /* ==========================================
  * 2. CẤU HÌNH FREERTOS TASKS
@@ -39,7 +41,15 @@
  * 3. CẤU HÌNH THUẬT TOÁN & HỆ THỐNG
  * ========================================== */
 #define SENSOR_READ_DELAY_MS        10      // Chu kỳ đọc MPU6050 (10ms = 100Hz)
-#define RISK_THRESHOLD_WARNING      1.0f    // Ngưỡng gia tốc báo động Vàng (G)
-#define RISK_THRESHOLD_DANGER       2.0f    // Ngưỡng gia tốc báo động Đỏ (G)
+
+// Cấu hình RSSI & Khoảng cách (Log-distance path loss)
+#define RSSI_REF_1M                 -40     // RSSI đo được tại 1m (Cần hiệu chỉnh thực tế)
+#define RSSI_PATH_LOSS_EXP          2.5f    // Hệ số suy hao môi trường (2.0: thoáng, 3.0-4.0: đô thị)
+#define RSSI_FILTER_ALPHA           0.1f    // Hệ số lọc thông thấp (Low Pass Filter) cho RSSI (0.0 - 1.0)
+
+// Ngưỡng cảnh báo (Giả sử thuật toán đã loại bỏ trọng lực 1G hoặc dùng Linear Accel)
+#define RISK_THRESHOLD_WARNING      0.5f    // Phanh gấp nhẹ hoặc cua gắt (0.5G)
+#define RISK_THRESHOLD_DANGER       1.2f    // Phanh khẩn cấp hoặc va chạm (1.2G)
+#define COLLISION_TIME_THRESHOLD    2.0f    // Thời gian dự báo va chạm (TTC - Time To Collision) dưới 2s là nguy hiểm
 
 #endif // APP_CONFIG_H
