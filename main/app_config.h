@@ -2,54 +2,57 @@
 #define APP_CONFIG_H
 
 /* ==========================================
- * 1. CẤU HÌNH CHÂN PHẦN CỨNG (HARDWARE PINS)
+ * 1. CẤU HÌNH PHẦN CỨNG (HARDWARE PINS - ESP32-S3)
  * ========================================== */
 // Cảm biến MPU6050 (Giao tiếp I2C)
-// Lưu ý: Với ESP32-S3, hãy kiểm tra kỹ sơ đồ chân trên board mạch thực tế.
-#define I2C_MASTER_SCL_IO           22      // Chân SCL (Có thể map sang chân khác nếu board S3 dùng chân khác)
-#define I2C_MASTER_SDA_IO           21      // Chân SDA (Có thể map sang chân khác nếu board S3 dùng chân khác)
-#define I2C_MASTER_NUM              0       // Dùng cổng I2C số 0
-#define I2C_MASTER_FREQ_HZ          400000  // Tần số I2C (400kHz - Tốc độ cao)
+#define I2C_MASTER_SCL_IO           22      // Chân SCL
+#define I2C_MASTER_SDA_IO           21      // Chân SDA
+#define I2C_MASTER_NUM              0       // I2C Port 0
+#define I2C_MASTER_FREQ_HZ          400000  // 400kHz (Fast Mode)
 
 // Module GPS NEO-6M (Giao tiếp UART)
-#define GPS_UART_NUM                1       // Dùng cổng UART số 1
-#define GPS_TX_PIN                  17      // Chân TX của ESP nối với RX của GPS
-#define GPS_RX_PIN                  16      // Chân RX của ESP nối với TX của GPS
-#define GPS_BAUD_RATE               9600    // Baudrate mặc định (Nên nâng lên 38400/115200 để chạy 10Hz)
-#define GPS_UPDATE_RATE_HZ          5       // Tần số cập nhật vị trí mong muốn (Hz)
+#define GPS_UART_NUM                1       // UART Port 1
+#define GPS_TX_PIN                  17      // ESP TX nối GPS RX
+#define GPS_RX_PIN                  16      // ESP RX nối GPS TX
+#define GPS_BAUD_RATE               9600    // Baudrate NMEA chuẩn
 
 /* ==========================================
  * 2. CẤU HÌNH FREERTOS TASKS
  * ========================================== */
-// Định nghĩa Lõi CPU (ESP32 có 2 lõi: 0 và 1)
-#define CORE_0                      0
-#define CORE_1                      1
+// Định nghĩa Lõi CPU
+#define CORE_0                      0       // Dùng cho IPC và Output
+#define CORE_1                      1       // Dùng cho Input và Xử lý lõi
 
-// Kích thước Stack (Kích thước "bàn làm việc" cho từng Task)
-#define TASK_STACK_SENSOR           4096    // 4KB cho Task đọc cảm biến
-#define TASK_STACK_ALGO             8192    // 8KB cho Task Thuật toán (vì tính toán số thực tốn RAM)
-#define TASK_STACK_COMM             4096    // 4KB cho Task mạng ESP-NOW
-#define TASK_STACK_DISPLAY          4096    // 4KB cho Task vẽ màn hình TFT
+// Kích thước Stack (Tính bằng Byte)
+#define TASK_STACK_SENSOR           4096
+#define TASK_STACK_ALGO             8192    // Cần nhiều RAM để tính toán vector/float
+#define TASK_STACK_COMM             4096
+#define TASK_STACK_DISPLAY          4096
 
-// Mức độ ưu tiên (Priority - Số càng lớn càng được ưu tiên chạy trước)
-#define TASK_PRIO_ALGO              5       // Bộ não hệ thống: Ưu tiên Tối cao
-#define TASK_PRIO_SENSOR            4       // Mắt/Tai thu thập: Ưu tiên số 2
-#define TASK_PRIO_COMM              3       // Mạng WiFi: Ưu tiên số 3
-#define TASK_PRIO_DISPLAY           2       // Vẽ màn hình (không quá gấp): Ưu tiên thấp nhất
+// Mức độ ưu tiên (Số càng lớn -> Ưu tiên càng cao)
+#define TASK_PRIO_ALGO              5       // Lõi tính toán rủi ro (Cao nhất)
+#define TASK_PRIO_SENSOR            4       // Thu thập dữ liệu liên tục
+#define TASK_PRIO_COMM              3       // Xử lý mạng V2V
+#define TASK_PRIO_DISPLAY           2       // Vẽ UI (Thấp nhất)
 
 /* ==========================================
- * 3. CẤU HÌNH THUẬT TOÁN & HỆ THỐNG
+ * 3. THÔNG SỐ THUẬT TOÁN ĐỘNG HỌC & MẠNG
  * ========================================== */
-#define SENSOR_READ_DELAY_MS        10      // Chu kỳ đọc MPU6050 (10ms = 100Hz)
+// Tần số lấy mẫu
+#define SENSOR_READ_DELAY_MS        10      // Chu kỳ đọc MPU6050: 10ms (100Hz)
 
-// Cấu hình RSSI & Khoảng cách (Log-distance path loss)
-#define RSSI_REF_1M                 -40     // RSSI đo được tại 1m (Cần hiệu chỉnh thực tế)
-#define RSSI_PATH_LOSS_EXP          2.5f    // Hệ số suy hao môi trường (2.0: thoáng, 3.0-4.0: đô thị)
-#define RSSI_FILTER_ALPHA           0.1f    // Hệ số lọc thông thấp (Low Pass Filter) cho RSSI (0.0 - 1.0)
+// Ngưỡng phát hiện hành vi bản thân (Layer 1 - MPU6050)
+#define ACCEL_HARD_BRAKE            0.6f    // Gia tốc > 0.6G: Phanh gấp (Sự kiện)
+#define ACCEL_CRASH_DETECTED        3.0f    // Gia tốc > 3.0G: Va chạm thực tế (Sự kiện khẩn)
 
-// Ngưỡng cảnh báo (Giả sử thuật toán đã loại bỏ trọng lực 1G hoặc dùng Linear Accel)
-#define RISK_THRESHOLD_WARNING      0.5f    // Phanh gấp nhẹ hoặc cua gắt (0.5G)
-#define RISK_THRESHOLD_DANGER       1.2f    // Phanh khẩn cấp hoặc va chạm (1.2G)
-#define COLLISION_TIME_THRESHOLD    2.0f    // Thời gian dự báo va chạm (TTC - Time To Collision) dưới 2s là nguy hiểm
+// Ngưỡng dự báo va chạm (Layer 3 - TTC: Time To Collision)
+#define TTC_WARNING_SEC             4.0f    // Còn <= 4 giây: Cảnh báo Vàng (Warning)
+#define TTC_DANGER_SEC              2.0f    // Còn <= 2 giây: Cảnh báo Đỏ (Danger)
+#define SAFE_DISTANCE_MIN_M         5.0f    // Khoảng cách an toàn tối thiểu (Bù trừ sai số GPS)
 
-#endif // APP_CONFIG_H
+// Thông số suy hao tín hiệu ESP-NOW (Layer 2 - Mesh/Distance)
+#define RSSI_REF_1M                 -40     // dBm đo được ở 1 mét
+#define RSSI_PATH_LOSS_EXP          2.5f    // Hệ số suy hao môi trường đô thị
+#define RSSI_FILTER_ALPHA           0.1f    // Hệ số lọc thông thấp IIR cho RSSI
+
+#endif // APP_CONFIG_H 
