@@ -46,6 +46,7 @@ typedef struct {
     float speed;
     float heading;
     uint32_t timestamp; // timestamp xe gửi
+    uint32_t last_rx_tick;  // local tick khi nhận 
     bool is_active;
 } Neighbor_t;
 
@@ -92,6 +93,6 @@ void NeighborTable_Update(uint32_t vehicle_id,
                           float heading,
                           uint32_t timestamp);
 
-void NeighborTable_RemoveTimeout(uint32_t current_time);
+void Neighbor_Table_RemoveTimeout(void);
 
 #endif

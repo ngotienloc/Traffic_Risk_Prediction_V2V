@@ -32,44 +32,78 @@ void NeighborTable_Update(uint32_t vehicle_id,
                           float lon,
                           float speed,
                           float heading,
-                          uint32_t timestamp)
+                          uint32_t gps_timestamp)
 {
-    if(Mutex_Neighbor_Table == NULL){
-        return; 
-    }
+    if (Mutex_Neighbor_Table == NULL)
+        return;
+
+    uint32_t now_tick = xTaskGetTickCount();
 
     xSemaphoreTake(Mutex_Neighbor_Table, portMAX_DELAY);
 
-    //1. Check vehicel ID xem da co chua
-    for(int i = 0; i < MAX_NEIGHBORS; i++){
-        if(Neighbor_Table.list[i].is_active  && (Neighbor_Table.list[i].vehicle_id == vehicle_id )){
-            Neighbor_Table.list[i].latitude = lat;     
-            Neighbor_Table.list[i].longitude = lon;   
-            Neighbor_Table.list[i].speed = speed;
-            Neighbor_Table.list[i].heading = heading;       
-            Neighbor_Table.list[i].timestamp = timestamp;
-            
+    for (int i = 0; i < MAX_NEIGHBORS; i++) {
+
+        if (Neighbor_Table.list[i].is_active &&
+            Neighbor_Table.list[i].vehicle_id == vehicle_id)
+        {
+            Neighbor_Table.list[i].latitude      = lat;
+            Neighbor_Table.list[i].longitude     = lon;
+            Neighbor_Table.list[i].speed         = speed;
+            Neighbor_Table.list[i].heading       = heading;
+            Neighbor_Table.list[i].timestamp = gps_timestamp;
+            Neighbor_Table.list[i].last_rx_tick  = now_tick;
+
             xSemaphoreGive(Mutex_Neighbor_Table);
-            return; 
+            return;
         }
     }
 
-    // 2. Nếu chưa có → thêm mới
     for (int i = 0; i < MAX_NEIGHBORS; i++) {
+
         if (!Neighbor_Table.list[i].is_active) {
 
-            Neighbor_Table.list[i].vehicle_id = vehicle_id;
-            Neighbor_Table.list[i].latitude   = lat;
-            Neighbor_Table.list[i].longitude  = lon;
-            Neighbor_Table.list[i].speed      = speed;
-            Neighbor_Table.list[i].heading    = heading;
-            Neighbor_Table.list[i].timestamp  = timestamp;
-            Neighbor_Table.list[i].is_active  = true;
+            Neighbor_Table.list[i].vehicle_id    = vehicle_id;
+            Neighbor_Table.list[i].latitude      = lat;
+            Neighbor_Table.list[i].longitude     = lon;
+            Neighbor_Table.list[i].speed         = speed;
+            Neighbor_Table.list[i].heading       = heading;
+            Neighbor_Table.list[i].timestamp     = gps_timestamp;
+            Neighbor_Table.list[i].last_rx_tick  = now_tick;
+            Neighbor_Table.list[i].is_active     = true;
 
             Neighbor_Table.count++;
             break;
         }
     }
+
     xSemaphoreGive(Mutex_Neighbor_Table);
 }
 
+/* ==========================================================
+ * REMOVE TIMEOUT NEIGHBORS
+ * ========================================================== */
+
+void Neighbor_Table_RemoveTimeout(void)
+{
+    if (Mutex_Neighbor_Table == NULL)
+        return;
+
+    uint32_t now = xTaskGetTickCount();
+
+    xSemaphoreTake(Mutex_Neighbor_Table, portMAX_DELAY);
+
+    for (int i = 0; i < MAX_NEIGHBORS; i++) {
+
+        if (Neighbor_Table.list[i].is_active) {
+
+            if ((now - Neighbor_Table.list[i].last_rx_tick) >
+                pdMS_TO_TICKS(NEIGHBOR_TIMEOUT_MS))
+            {
+                Neighbor_Table.list[i].is_active = false;
+                Neighbor_Table.count--;
+            }
+        }
+    }
+
+    xSemaphoreGive(Mutex_Neighbor_Table);
+}
