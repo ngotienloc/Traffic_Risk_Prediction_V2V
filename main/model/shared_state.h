@@ -40,7 +40,7 @@ typedef struct {
  * ========================================================== */
 
 typedef struct {
-    uint8_t id[6];     
+    uint32_t vehicle_id;     
     float latitude;
     float longitude;
     float speed;
@@ -52,7 +52,7 @@ typedef struct {
 typedef struct {
     Neighbor_t list[MAX_NEIGHBORS];
     int count;
-} NeighborTable_t;
+} Neighbor_Table_t;
 
 /* ==========================================================
  * 3. SYSTEM STATE (Decision Layer)
@@ -62,7 +62,7 @@ typedef struct {
     int risk_level;         // 0 safe, 1 warning, 2 danger
     bool is_system_ready;
     uint32_t last_update_ms;
-} SystemState_t;
+} System_State_t;
 
 /* ==========================================================
  * 4. GLOBAL OBJECTS
@@ -73,11 +73,11 @@ extern QueueHandle_t Queue_MPU_Data;
 extern QueueHandle_t Queue_GPS_Data;
 
 /* Neighbor table */
-extern NeighborTable_t Neighbor_Table;
+extern Neighbor_Table_t Neighbor_Table;
 extern SemaphoreHandle_t Mutex_Neighbor_Table;
 
 /* System state */
-extern SystemState_t System_State;
+extern System_State_t System_State;
 extern SemaphoreHandle_t Mutex_System_State;
 
 /* ==========================================================
@@ -85,7 +85,7 @@ extern SemaphoreHandle_t Mutex_System_State;
  * ========================================================== */
 
 void NeighborTable_Init(void);
-void NeighborTable_Update(uint32_t vehicle_id[6],
+void NeighborTable_Update(uint32_t vehicle_id,
                           float lat,
                           float lon,
                           float speed,
