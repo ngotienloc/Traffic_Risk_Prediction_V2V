@@ -1,13 +1,14 @@
 #ifndef UART_GPS_H
 #define UART_GPS_H
+#include "driver/uart.h"
+#include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "app_config.h"
+#include <string.h>
 
-#include <stdbool.h>
-#include "model/shared_state.h"
-
-// Khởi tạo UART cho GPS
+// Khai báo công khai Event Queue để Task có thể 'lắng nghe'
+extern QueueHandle_t gps_uart_event_queue;
 void UART_GPS_Init(void);
 
-// Đọc và bóc tách dữ liệu NMEA trực tiếp từ buffer của UART
-bool UART_GPS_Read_Data(GPS_Data_t *gps_data);
-
-#endif // UART_GPS_H
+#endif

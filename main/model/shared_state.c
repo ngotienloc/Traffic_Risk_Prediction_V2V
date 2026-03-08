@@ -1,9 +1,16 @@
-#include "shared_state.h"
+#include "model/shared_state.h"
+#include "esp_log.h"
 
-/* Queues */
-QueueHandle_t Queue_MPU_Data = NULL;
-QueueHandle_t Queue_GPS_Data = NULL;
+static const char *TAG = "SharedState";
 
-/* System State */
-System_State_t System_State = {0};
+// Định nghĩa thật, cấp phát RAM
+System_State_t    System_State       = {0};
 SemaphoreHandle_t Mutex_System_State = NULL;
+
+void Shared_State_Init(void) {
+    Mutex_System_State = xSemaphoreCreateMutex();
+    if (Mutex_System_State == NULL) {
+        ESP_LOGE(TAG, "Không tạo được Mutex!");
+        esp_restart();
+    }
+}

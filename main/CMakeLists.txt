@@ -1,22 +1,26 @@
 idf_component_register(
     SRC_DIRS 
-        "." 
-        "system" 
-        "drivers" 
-        "comm" 
-        "model" 
-        "algo" 
-        "ui" 
+        "."
+        "system"
+        "drivers/gps"
+        "drivers/mpu"
+        "drivers/sensor"
+        "comm"
+        "model"
+        "algo"
+        "ui"
         "utils"
 
     INCLUDE_DIRS 
-        "." 
-        "system" 
-        "drivers" 
-        "comm" 
-        "model" 
-        "algo" 
-        "ui" 
+        "."
+        "system"
+        "drivers/gps"
+        "drivers/mpu"
+        "drivers/sensor"
+        "comm"
+        "model"
+        "algo"
+        "ui"
         "utils"
 
     REQUIRES
@@ -25,4 +29,5 @@ idf_component_register(
         esp_event
         driver
         nvs_flash
+        esp_timer
 )

@@ -13,9 +13,9 @@
 // Module GPS NEO-6M (Giao tiếp UART)
 #define GPS_UART_NUM                1       // UART Port 1
 #define GPS_TX_PIN                  17      // ESP TX nối GPS RX
-#define GPS_RX_PIN                  16      // ESP RX nối GPS TX
+#define GPS_RX_PIN                  18      // ESP RX nối GPS TX
 #define GPS_BAUD_RATE               9600    // Baudrate NMEA chuẩn
-
+#define GPS_BUF_SIZE                1024
 /* ==========================================
  * 2. CẤU HÌNH FREERTOS TASKS
  * ========================================== */
