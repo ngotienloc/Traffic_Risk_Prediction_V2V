@@ -7,7 +7,6 @@
 #include "app_config.h"
 #include <string.h>
 
-// Khai báo công khai Event Queue để Task có thể 'lắng nghe'
 extern QueueHandle_t gps_uart_event_queue;
 void UART_GPS_Init(void);
 

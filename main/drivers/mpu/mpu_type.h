@@ -1,13 +1,11 @@
 #ifndef MPU_TYPES_H
 #define MPU_TYPES_H
 
-// ĐÂY LÀ NƠI DUY NHẤT ĐỊNH NGHĨA MPU_Data_t
+// Cấu trúc dữ liệu MPU
 typedef struct {
-    float accel_x;  // Đo phanh gấp / tăng tốc (g)
-    float accel_y;  // Đo lực văng ngang (g)
-    float accel_z;  // Đo xóc nảy (g)
-    
-    // Đã bỏ biến heading đi theo như chốt phương án dùng GPS cho heading
+    float accel_x;  // gia tốc trục X (g)
+    float accel_y;  // gia tốc trục Y (g)
+    float accel_z;  // gia tốc trục Z (g)
 } MPU_Data_t;
 
 #endif // MPU_TYPES_H

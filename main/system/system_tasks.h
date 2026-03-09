@@ -2,14 +2,15 @@
 #define SYSTEM_TASK_H
 
 #include "drivers/gps/gps_types.h"
+#include "drivers/mpu/mpu_type.h"
 
-// Hàm Callback chuyên dùng để cập nhật GPS vào Shared_State
+// callback cập nhật dữ liệu GPS vào shared state
 void Callback_Update_GPS_State(GPS_Data_t *new_data);
 
-// Task quét dữ liệu cảm biến (sẽ dùng cho MPU6050)
-void Task_Sensor_MPU(void *pvParameters);       // Chưa dùng đến + Để tạm đây.
+// task đọc dữ liệu MPU
+void Task_Sensor_MPU(void *pvParameters);
 
-// Task chạy thuật toán TTC
-void Task_Algo(void *pvParameters); // Chưa dùng, để tạm ở đây.
+// task xử lý thuật toán (TTC)
+void Task_Algo(void *pvParameters);
 
-#endif 
+#endif

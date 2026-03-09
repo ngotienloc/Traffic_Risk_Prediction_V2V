@@ -1,60 +1,60 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
 
-/* ==========================================
- * 1. CẤU HÌNH PHẦN CỨNG (HARDWARE PINS - ESP32-S3)
- * ========================================== */
-// Module MPU6050 (Giao tiếp I2C)
-#define I2C_MASTER_SCL_IO           22      // Chân SCL
-#define I2C_MASTER_SDA_IO           21      // Chân SDA
-#define I2C_MASTER_NUM              0       // Cổng I2C số 0
-#define I2C_MASTER_FREQ_HZ          400000  // Tốc độ 400kHz (Fast mode)
-#define I2C_MASTER_TX_BUF_DISABLE   0       
+/* ================= Hardware configuration (ESP32-S3) ================= */
+
+// MPU6050 - I2C
+#define I2C_MASTER_SCL_IO           22
+#define I2C_MASTER_SDA_IO           21
+#define I2C_MASTER_NUM              0
+#define I2C_MASTER_FREQ_HZ          400000     // 400 kHz
+#define I2C_MASTER_TX_BUF_DISABLE   0
 #define I2C_MASTER_RX_BUF_DISABLE   0
 
-// Module GPS NEO-6M (Giao tiếp UART)
-#define GPS_UART_NUM                1       // UART Port 1
-#define GPS_TX_PIN                  17      // ESP TX nối GPS RX
-#define GPS_RX_PIN                  18      // ESP RX nối GPS TX
-#define GPS_BAUD_RATE               9600    // Baudrate NMEA chuẩn
+// GPS NEO-6M - UART
+#define GPS_UART_NUM                1
+#define GPS_TX_PIN                  17
+#define GPS_RX_PIN                  18
+#define GPS_BAUD_RATE               9600
 #define GPS_BUF_SIZE                1024
-/* ==========================================
- * 2. CẤU HÌNH FREERTOS TASKS
- * ========================================== */
-// Định nghĩa Lõi CPU
-#define CORE_0                      0       // Dùng cho IPC và Output
-#define CORE_1                      1       // Dùng cho Input và Xử lý lõi
 
-// Kích thước Stack (Tính bằng Byte)
+
+/* ================= FreeRTOS task configuration ================= */
+
+// CPU cores
+#define CORE_0                      0
+#define CORE_1                      1
+
+// task stack size (bytes)
 #define TASK_STACK_SENSOR           4096
-#define TASK_STACK_ALGO             8192    // Cần nhiều RAM để tính toán vector/float
+#define TASK_STACK_ALGO             8192
 #define TASK_STACK_COMM             4096
 #define TASK_STACK_DISPLAY          4096
 
-// Mức độ ưu tiên (Số càng lớn -> Ưu tiên càng cao)
-#define TASK_PRIO_ALGO              5       // Lõi tính toán rủi ro (Cao nhất)
-#define TASK_PRIO_SENSOR            4       // Thu thập dữ liệu liên tục
-#define TASK_PRIO_COMM              3       // Xử lý mạng V2V
-#define TASK_PRIO_DISPLAY           2       // Vẽ UI (Thấp nhất)
+// task priority
+#define TASK_PRIO_ALGO              5
+#define TASK_PRIO_SENSOR            4
+#define TASK_PRIO_COMM              3
+#define TASK_PRIO_DISPLAY           2
 
-/* ==========================================
- * 3. THÔNG SỐ THUẬT TOÁN ĐỘNG HỌC & MẠNG
- * ========================================== */
-// Tần số lấy mẫu
-#define SENSOR_READ_DELAY_MS        10      // Chu kỳ đọc MPU6050: 10ms (100Hz)
 
-// Ngưỡng phát hiện hành vi bản thân (Layer 1 - MPU6050)
-#define ACCEL_HARD_BRAKE            0.6f    // Gia tốc > 0.6G: Phanh gấp (Sự kiện)
-#define ACCEL_CRASH_DETECTED        3.0f    // Gia tốc > 3.0G: Va chạm thực tế (Sự kiện khẩn)
+/* ================= Algorithm parameters ================= */
 
-// Ngưỡng dự báo va chạm (Layer 3 - TTC: Time To Collision)
-#define TTC_WARNING_SEC             4.0f    // Còn <= 4 giây: Cảnh báo Vàng (Warning)
-#define TTC_DANGER_SEC              2.0f    // Còn <= 2 giây: Cảnh báo Đỏ (Danger)
-#define SAFE_DISTANCE_MIN_M         5.0f    // Khoảng cách an toàn tối thiểu (Bù trừ sai số GPS)
+// sensor sampling
+#define SENSOR_READ_DELAY_MS        10      // 100 Hz
 
-// Thông số suy hao tín hiệu ESP-NOW (Layer 2 - Mesh/Distance)
-#define RSSI_REF_1M                 -40     // dBm đo được ở 1 mét
-#define RSSI_PATH_LOSS_EXP          2.5f    // Hệ số suy hao môi trường đô thị
-#define RSSI_FILTER_ALPHA           0.1f    // Hệ số lọc thông thấp IIR cho RSSI
+// self-behavior detection (MPU6050)
+#define ACCEL_HARD_BRAKE            0.6f
+#define ACCEL_CRASH_DETECTED        3.0f
 
-#endif // APP_CONFIG_H 
+// collision prediction (TTC)
+#define TTC_WARNING_SEC             4.0f
+#define TTC_DANGER_SEC              2.0f
+#define SAFE_DISTANCE_MIN_M         5.0f
+
+// ESP-NOW RSSI model
+#define RSSI_REF_1M                 -40
+#define RSSI_PATH_LOSS_EXP          2.5f
+#define RSSI_FILTER_ALPHA           0.1f
+
+#endif // APP_CONFIG_H

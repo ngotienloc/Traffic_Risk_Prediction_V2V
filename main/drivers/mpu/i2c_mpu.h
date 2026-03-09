@@ -5,7 +5,6 @@
 #include "esp_err.h"
 #include "app_config.h"
 
-// Các hàm thao tác I2C cơ bản
 esp_err_t i2c_master_init(void);
 esp_err_t i2c_write_register(uint8_t dev_addr, uint8_t reg_addr, uint8_t data);
 esp_err_t i2c_read_registers(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, size_t len);
