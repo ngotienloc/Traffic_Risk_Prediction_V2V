@@ -4,11 +4,13 @@
 /* ==========================================
  * 1. CẤU HÌNH PHẦN CỨNG (HARDWARE PINS - ESP32-S3)
  * ========================================== */
-// Cảm biến MPU6050 (Giao tiếp I2C)
+// Module MPU6050 (Giao tiếp I2C)
 #define I2C_MASTER_SCL_IO           22      // Chân SCL
 #define I2C_MASTER_SDA_IO           21      // Chân SDA
-#define I2C_MASTER_NUM              0       // I2C Port 0
-#define I2C_MASTER_FREQ_HZ          400000  // 400kHz (Fast Mode)
+#define I2C_MASTER_NUM              0       // Cổng I2C số 0
+#define I2C_MASTER_FREQ_HZ          400000  // Tốc độ 400kHz (Fast mode)
+#define I2C_MASTER_TX_BUF_DISABLE   0       
+#define I2C_MASTER_RX_BUF_DISABLE   0
 
 // Module GPS NEO-6M (Giao tiếp UART)
 #define GPS_UART_NUM                1       // UART Port 1

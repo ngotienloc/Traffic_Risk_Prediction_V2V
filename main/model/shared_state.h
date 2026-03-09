@@ -9,15 +9,8 @@
 /* ================= 1. GỌI CÁC BẢN VẼ TỪ TẦNG ĐÁY ================= */
 // TUYỆT ĐỐI KHÔNG định nghĩa lại struct GPS_Data_t ở đây nữa!
 #include "drivers/gps/gps_types.h" 
+#include "drivers/mpu/mpu_type.h"
 
-// Tạm thời mình cứ để MPU_Data_t ở đây cho bạn dễ hình dung. 
-// Đẹp nhất là lát nữa mình tách nó ra file "model/sensor/mpu_types.h" giống hệt GPS.
-typedef struct {
-    float accel_x;
-    float accel_y;
-    float accel_z;
-    float heading;
-} MPU_Data_t;
 
 
 /* ================= 2. CẤU TRÚC KÉT SẮT TỔNG ================= */
