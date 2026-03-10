@@ -7,23 +7,67 @@
 
 /* ================= I2C - MPU6050 ================= */
 
+// I2C controller dùng trên ESP32
 #define I2C_MASTER_NUM              0
-#define I2C_MASTER_SCL_IO           22
-#define I2C_MASTER_SDA_IO           21
+
+// GPIO dùng cho SCL (clock line của I2C)
+#define I2C_MASTER_SCL_IO           9
+
+// GPIO dùng cho SDA (data line của I2C)
+#define I2C_MASTER_SDA_IO           8
+
+// Tốc độ I2C (400kHz = Fast Mode, đọc sensor nhanh hơn)
 #define I2C_MASTER_FREQ_HZ          400000
+
+// Không dùng buffer TX cho I2C master
 #define I2C_MASTER_TX_BUF_DISABLE   0
+
+// Không dùng buffer RX cho I2C master
 #define I2C_MASTER_RX_BUF_DISABLE   0
 
 
 /* ================= MPU6050 Registers ================= */
 
+// Power Management Register
+// dùng để bật/tắt sensor hoặc reset MPU6050
+// ghi 0x00 → đánh thức chip (wake up)
 #define MPU6050_PWR_MGMT_1      0x6B
-#define MPU6050_SMPLRT_DIV      0x19
-#define MPU6050_CONFIG_REG      0x1A
-#define MPU6050_ACCEL_CONFIG    0x1C
-#define MPU6050_GYRO_CONFIG     0x1B
-#define MPU6050_ACCEL_XOUT_H    0x3B
 
+
+// Sample Rate Divider Register
+// dùng để chia tần số lấy mẫu của sensor
+// sample_rate = 1000Hz / (1 + divider)
+#define MPU6050_SMPLRT_DIV      0x19
+
+
+// Configuration Register
+// dùng để cấu hình Digital Low Pass Filter (DLPF)
+// lọc rung và nhiễu của accelerometer + gyro
+#define MPU6050_CONFIG_REG      0x1A
+
+
+// Accelerometer Configuration Register
+// chọn dải đo của accelerometer
+// 0x00 = ±2g
+// 0x08 = ±4g
+// 0x10 = ±8g
+// 0x18 = ±16g
+#define MPU6050_ACCEL_CONFIG    0x1C
+
+
+// Gyroscope Configuration Register
+// chọn dải đo của gyro
+// 0x00 = ±250 °/s
+// 0x08 = ±500 °/s
+// 0x10 = ±1000 °/s
+// 0x18 = ±2000 °/s
+#define MPU6050_GYRO_CONFIG     0x1B
+
+
+// Accelerometer Data Register (High byte của trục X)
+// từ địa chỉ này có thể đọc liên tiếp:
+// ACCEL_X, ACCEL_Y, ACCEL_Z
+#define MPU6050_ACCEL_XOUT_H    0x3B
 
 /* ================= MPU6050 Sensor Config ================= */
 

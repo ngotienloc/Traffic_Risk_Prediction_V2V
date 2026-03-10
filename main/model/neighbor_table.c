@@ -1,3 +1,10 @@
+// Ý tưởng: Cần tính alogirthm ra khoảng cách trước nhằm xem nên ưu tiên thằng nào được tính toán trước.
+
+
+
+
+
+
 #include "neighbor_table.h"
 #include <string.h>
 

@@ -34,6 +34,20 @@ bool MPU6050_Init(void)
     // enable DLPF 44Hz
     i2c_write_register(MPU6050_I2C_ADDR, MPU6050_CONFIG_REG, 3);
 
+    // set accelerometer range (±2g)
+    i2c_write_register(
+        MPU6050_I2C_ADDR,
+        MPU6050_ACCEL_CONFIG,
+        MPU6050_ACCEL_RANGE
+    );
+
+    // set gyro range (±250 deg/s)
+    i2c_write_register(
+        MPU6050_I2C_ADDR,
+        MPU6050_GYRO_CONFIG,
+        MPU6050_GYRO_RANGE
+    );
+
     ESP_LOGI(TAG, "MPU6050 initialized");
 
     return true;

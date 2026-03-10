@@ -2,6 +2,8 @@
 #define PACKET_H
 
 #include <stdint.h>
+#include "system/device_info.h"
+#include "model/shared_state.h"
 
 // Định nghĩa các loại Event (Theo Algorithm Flowchart)
 typedef enum {
@@ -33,9 +35,10 @@ typedef struct __attribute__((packed)) {
 // Gia toc khong can dua vao ban tin broadcast vi no duoc xu ly tai ban than xe va gui qua risk_level hay event_type
 
 // Khởi tạo một gói tin mới với giá trị mặc định
-void Packet_Init(V2V_Packet_t *packet, uint32_t my_id);
+void Packet_Init(V2V_Packet_t *packet);
 
 // In thông tin gói tin ra console (dùng cho debug)
 void Packet_Print(const V2V_Packet_t *packet);
 
+void Packet_Update(V2V_Packet_t *packet);
 #endif
