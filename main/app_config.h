@@ -15,26 +15,30 @@
 #define I2C_MASTER_RX_BUF_DISABLE   0
 
 
-/* ================= MPU6050 Sensor ================= */
+/* ================= MPU6050 Registers ================= */
+
+#define MPU6050_PWR_MGMT_1      0x6B
+#define MPU6050_SMPLRT_DIV      0x19
+#define MPU6050_CONFIG_REG      0x1A
+#define MPU6050_ACCEL_CONFIG    0x1C
+#define MPU6050_GYRO_CONFIG     0x1B
+#define MPU6050_ACCEL_XOUT_H    0x3B
+
+
+/* ================= MPU6050 Sensor Config ================= */
 
 #define MPU6050_I2C_ADDR            0x68
 
-// accelerometer range
 #define MPU6050_ACCEL_RANGE         0x00    // ±2g
-
-// gyro range
 #define MPU6050_GYRO_RANGE          0x00    // ±250 deg/s
+#define MPU6050_DLPF_CONFIG         0x03    // 44Hz
+#define MPU6050_SMPLRT_DIV_VALUE    9       // 100Hz
 
-// digital low pass filter
-#define MPU6050_DLPF_CONFIG         0x03    // ~44Hz
 
-// sample rate
-#define MPU6050_SAMPLE_DIV          9       // 100Hz
+/* ================= Scale ================= */
 
-// scale factors
 #define MPU6050_ACCEL_SCALE         16384.0f
 #define MPU6050_GYRO_SCALE          131.0f
-
 
 /* ================= GPS NEO-6M (UART) ================= */
 
