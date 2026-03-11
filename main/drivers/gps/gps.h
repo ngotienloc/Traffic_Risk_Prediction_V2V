@@ -2,6 +2,7 @@
 #define GPS_H
 
 #include "drivers/gps/gps_types.h"
+#include <time.h>
 
 typedef void (*gps_callback_t)(GPS_Data_t *data);
 

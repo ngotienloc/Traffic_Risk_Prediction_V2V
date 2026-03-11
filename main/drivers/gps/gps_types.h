@@ -8,7 +8,7 @@ typedef struct {
     float longitude;
     float speed;
     float heading;
-    uint32_t timestamp;
+    uint64_t timestamp;
     uint8_t satellites;
     float hdop;
     bool is_valid;

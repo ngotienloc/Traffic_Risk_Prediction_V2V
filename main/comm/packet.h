@@ -28,8 +28,8 @@ typedef struct __attribute__((packed)) {
     float    latitude;
     float    longitude;
     float    speed;         // Vận tốc (m/s)
-    float    heading;       // Hướng di chuyển (độ) (Kiem tra can dieu kien them  tren mpu6050)
-    uint32_t timestamp;     // Thời gian lấy từ GPS (để đồng bộ)
+    float    heading;       // Hướng di chuyển (độ) 
+    uint64_t timestamp;     // Thời gian lấy từ GPS (để đồng bộ)
 } V2V_Packet_t;
 
 // Gia toc khong can dua vao ban tin broadcast vi no duoc xu ly tai ban than xe va gui qua risk_level hay event_type
@@ -40,5 +40,5 @@ void Packet_Init(V2V_Packet_t *packet);
 // In thông tin gói tin ra console (dùng cho debug)
 void Packet_Print(const V2V_Packet_t *packet);
 
-void Packet_Update(V2V_Packet_t *packet);
+bool Packet_Update(V2V_Packet_t *packet);
 #endif

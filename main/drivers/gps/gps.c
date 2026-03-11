@@ -16,18 +16,16 @@ static uint8_t last_satellites = 0;
 static float last_hdop = 99.9f;
 static int last_fix_quality = 0;
 
-// ================= NMEA PARSER =================
-static void parse_nmea(char *sentence) {
-
+static void parse_nmea(char *sentence)
+{
     // bỏ qua chuỗi không hợp lệ
     if (strlen(sentence) < 10 || sentence[0] != '$') {
         return;
     }
 
-    // -------- Parse GGA --------
-    // lấy số vệ tinh, HDOP, fix quality
-    if (strstr(sentence, "GGA") != NULL) {
-
+    /* -------- Parse GGA -------- */
+    if (strstr(sentence, "GGA") != NULL)
+    {
         char time_str[16], lat_str[16], ns, lon_str[16], ew;
         int fix_quality = 0;
         uint8_t sats = 0;
@@ -45,10 +43,10 @@ static void parse_nmea(char *sentence) {
         }
     }
 
-    // -------- Parse RMC --------
-    // lấy vị trí, tốc độ và heading
-    else if (strstr(sentence, "RMC") != NULL) {
-
+    /* -------- Parse RMC -------- */
+    else if (strstr(sentence, "RMC") != NULL)
+    {
+        char time_str[16];
         char status;
         char lat_str[16], ns, lon_str[16], ew;
         float speed_knots = 0.0f;
@@ -56,31 +54,41 @@ static void parse_nmea(char *sentence) {
         char date_str[16];
 
         int fields = sscanf(sentence,
-                            "$%*[^,],%*[^,],%c,%15[^,],%c,%15[^,],%c,%f,%f,%15[^,]",
-                            &status, lat_str, &ns,
+                            "$%*[^,],%15[^,],%c,%15[^,],%c,%15[^,],%c,%f,%f,%15[^,]",
+                            time_str,
+                            &status,
+                            lat_str, &ns,
                             lon_str, &ew,
                             &speed_knots, &course,
                             date_str);
 
-        if (fields >= 7 && status == 'A') {
+        if (fields >= 8 && status == 'A')
+        {
+            /* -------- Convert Latitude -------- */
 
-            // convert latitude ddmm.mmmm -> decimal
             float latitude = 0.0f;
+
             if (strlen(lat_str) > 4) {
                 char deg_buf[4] = {0};
                 strncpy(deg_buf, lat_str, 2);
+
                 float minutes = atof(lat_str + 2);
                 latitude = atoi(deg_buf) + minutes / 60.0f;
+
                 if (ns == 'S') latitude = -latitude;
             }
 
-            // convert longitude dddmm.mmmm -> decimal
+            /* -------- Convert Longitude -------- */
+
             float longitude = 0.0f;
+
             if (strlen(lon_str) > 5) {
                 char deg_buf[5] = {0};
                 strncpy(deg_buf, lon_str, 3);
+
                 float minutes = atof(lon_str + 3);
                 longitude = atoi(deg_buf) + minutes / 60.0f;
+
                 if (ew == 'W') longitude = -longitude;
             }
 
@@ -89,13 +97,46 @@ static void parse_nmea(char *sentence) {
             gps_data.speed     = speed_knots * 0.514444f;   // knots -> m/s
             gps_data.heading   = course;
 
-            // timestamp ms từ boot
-            gps_data.timestamp = (uint32_t)(esp_timer_get_time() / 1000ULL);
+            /* -------- Parse GPS Time -------- */
+
+            struct tm gps_time = {0};
+
+            if (strlen(time_str) >= 6 && strlen(date_str) == 6)
+            {
+                char buf[3] = {0};
+
+                // HH
+                strncpy(buf, time_str, 2);
+                gps_time.tm_hour = atoi(buf);
+
+                // MM
+                strncpy(buf, time_str + 2, 2);
+                gps_time.tm_min = atoi(buf);
+
+                // SS
+                strncpy(buf, time_str + 4, 2);
+                gps_time.tm_sec = atoi(buf);
+
+                // DD
+                strncpy(buf, date_str, 2);
+                gps_time.tm_mday = atoi(buf);
+
+                // MM
+                strncpy(buf, date_str + 2, 2);
+                gps_time.tm_mon = atoi(buf) - 1;
+
+                // YY
+                strncpy(buf, date_str + 4, 2);
+                gps_time.tm_year = atoi(buf) + 100;   // since 1900 → 2000+
+
+               gps_data.timestamp = ((uint64_t)mktime(&gps_time) * 1000);
+            }
 
             gps_data.satellites = last_satellites;
             gps_data.hdop       = last_hdop;
 
-            // điều kiện fix hợp lệ
+            /* -------- Check Fix Valid -------- */
+
             bool valid = (status == 'A' &&
                           last_fix_quality >= 1 &&
                           last_satellites >= 4 &&
@@ -108,7 +149,8 @@ static void parse_nmea(char *sentence) {
                 data_ready_cb(&gps_data);
             }
         }
-        else {
+        else
+        {
             gps_data.is_valid = false;
         }
     }

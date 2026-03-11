@@ -8,6 +8,7 @@
 #include "drivers/gps/gps.h"
 #include "drivers/mpu/mpu6050.h"
 #include "system/system_tasks.h"
+#include "comm/packet.h"
 
 static const char *TAG = "MAIN";
 
@@ -64,6 +65,31 @@ static void Task_Debug_Print(void *pvParameters)
 
 
 /* ---------------------------------------------------------
+   TASK TEST PACKET
+--------------------------------------------------------- */
+static void Task_Test_Packet(void *pvParameters)
+{
+    V2V_Packet_t packet;
+
+    Packet_Init(&packet);
+
+    while (1)
+    {
+        if (Packet_Update(&packet))
+        {
+            Packet_Print(&packet);
+        }
+        else
+        {
+            ESP_LOGW("PACKET", "Packet update failed (Mutex busy)");
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(1000));   // tạo packet mỗi 1s
+    }
+}
+
+
+/* ---------------------------------------------------------
    MAIN
 --------------------------------------------------------- */
 void app_main(void)
@@ -75,12 +101,13 @@ void app_main(void)
     Shared_State_Init();
     ESP_LOGI(TAG, "Shared State & Mutex khởi tạo thành công.");
 
-    /* ---------- GPS ---------- */
+    /* ---------- Sensors Init ---------- */
 
     GPS_Init();
     MPU6050_Init();
 
-    
+    /* ---------- GPS Callback ---------- */
+
     GPS_RegisterCallback(Callback_Update_GPS_State);
 
     ESP_LOGI(TAG, "GPS khởi tạo và Callback đã đăng ký.");
@@ -118,6 +145,18 @@ void app_main(void)
     xTaskCreatePinnedToCore(
         Task_Debug_Print,
         "Debug_Task",
+        4096,
+        NULL,
+        1,
+        NULL,
+        CORE_0
+    );
+
+    /* Packet Test Task */
+
+    xTaskCreatePinnedToCore(
+        Task_Test_Packet,
+        "Packet_Task",
         4096,
         NULL,
         1,
