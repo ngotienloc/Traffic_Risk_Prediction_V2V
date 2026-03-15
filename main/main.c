@@ -75,7 +75,7 @@ static void Task_Test_Packet(void *pvParameters)
 
     while (1)
     {
-        if (Packet_Update(&packet))
+        if (Task_Packet_Update(&packet))
         {
             Packet_Print(&packet);
         }
